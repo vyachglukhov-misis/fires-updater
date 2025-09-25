@@ -1,3 +1,2 @@
-export const startService = () => {}
-export const cronService = () => {}
-export const generateMainTiff = () => {}
+export const generateMainTiff = async () => {}
+export const asd = async () => {}
