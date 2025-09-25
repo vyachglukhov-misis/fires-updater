@@ -1,2 +1,2 @@
 export const generateMainTiff = async () => {}
-export const asd = async () => {}
+export const getFires = async () => {}

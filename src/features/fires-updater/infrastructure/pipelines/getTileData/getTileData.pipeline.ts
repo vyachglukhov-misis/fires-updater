@@ -1,12 +1,12 @@
 import * as turf from "@turf/turf"
 import type { Feature } from "geojson"
 import rbush from "rbush"
-import type { FireObjectWithWeighedParams } from "../types/fires.types.js"
-import { config } from "../config.js"
-import type { GetSectorDataResult } from "../types/sector-data.types.js"
-import type { WeightedParam } from "../enums/regions.enum.js"
+import type { FireObjectWithWeighedParams } from "../../domain/types/fires.types.js"
+import { config } from "../../config.js"
+import type { GetSectorDataResult } from "../../domain/types/sector-data.types.js"
+import type { WeightedParam } from "../static-data/pathsToStaticData.js"
 
-export const getTileDataPipeline = async (
+const getTileDataPipeline = async (
     feature: Feature,
     tileName: string,
     firesObjects: FireObjectWithWeighedParams[],
