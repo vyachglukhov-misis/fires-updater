@@ -6,7 +6,7 @@ import { PROJECT_ROOT_PATH } from "~/utils/constants.js"
 const TMP_DIR = path.join(os.tmpdir(), "tiff-fires-updater")
 
 export const workingDirectories = {
-    MAIN_TIFF_OUTPUT_DIR: path.join(PROJECT_ROOT_PATH, ".."), // куда упадёт сшитый тифф
+    MAIN_TIFF_OUTPUT_DIR: path.join(PROJECT_ROOT_PATH, "out"), // куда упадёт сшитый тифф
 
     // куда падают .txt файлы со списком {fileName}.tiff (для работы gdal_merge.py)
     OPT_OUTPUT_DIR: path.join(TMP_DIR, "tiff_filenames"),
