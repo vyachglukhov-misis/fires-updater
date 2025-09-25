@@ -1,8 +1,8 @@
 import path from "path"
 import gdal from "gdal-async"
-import { config } from "../../config.js"
-import type { SectorData } from "../../domain/types/sector-data.types.js"
-import { workingDirectories } from "../chores/directoriesManager.js"
+import { config } from "../../../config.js"
+import type { SectorData } from "../../../domain/types/sector-data.types.js"
+import { workingDirectories } from "../../chores/directoriesManager.js"
 
 const { TILES_OUTPUT_DIR } = workingDirectories
 

@@ -6,7 +6,7 @@
     "scripts": {
         "build": "tsc",
         "start": "node dist/index.js",
-        "dev": "tsx watch src/index.ts",
+        "dev": "NODE_OPTIONS='--max-old-space-size=8192' tsx src/index.ts",
         "format": "prettier --write .",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
@@ -29,7 +29,8 @@
         "p-limit": "^7.1.1",
         "proj4": "^2.19.10",
         "rbush": "^4.0.1",
-        "winston": "^3.17.0"
+        "winston": "^3.17.0",
+        "zod": "^4.1.11"
     },
     "devDependencies": {
         "@faker-js/faker": "^10.0.0",
@@ -50,6 +51,7 @@
         "prettier": "^3.6.2",
         "supertest": "^7.1.4",
         "ts-node": "^10.9.2",
+        "tsconfig-paths": "^4.2.0",
         "tsx": "^4.20.5",
         "typescript": "^5.9.2",
         "typescript-eslint": "^8.44.1",

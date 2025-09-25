@@ -1,11 +1,10 @@
 import path from "path"
 import type { ParamFromObject } from "../../domain/types/fires.types.js"
+import { REGIONS } from "../../domain/enums/regions.enum.js"
+import { fileURLToPath } from "url"
 
-export enum REGIONS {
-    KS = "krasnoyarsk",
-    NK = "norilsk",
-    HB = "habarovsk",
-}
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const KRASNOYARSK_PATH = path.join(__dirname, "krasnoyarsk")
 const NORILSK_PATH = path.join(__dirname, "norilsk")
@@ -27,3 +26,19 @@ export const pathsToRegion = {
 }
 
 export type WeightedParam<T> = ParamFromObject<T> & { weight: number }
+
+export const paramsToRegion: Record<REGIONS, WeightedParam<any>[]> = {
+    [REGIONS.HB]: [
+        {
+            pathToParam: "object.bc3aef97b9a21dc7900e64d534dc4e0c9.areaBurn",
+            paramName: "areaBurn",
+            converter: (val: unknown) => {
+                if (typeof val === "string") return Number(val)
+                return 0
+            },
+            weight: 0.95,
+        },
+    ],
+    [REGIONS.KS]: [],
+    [REGIONS.NK]: [],
+}

@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express"
-import { logger } from "./logger.js"
+import { logger } from "../logger.js"
 
 export const loggerMiddleware = (envMode: string) => {
     return (req: Request, res: Response, next: NextFunction) => {

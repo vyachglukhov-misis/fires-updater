@@ -1,5 +1,5 @@
 import express from "express"
-import { loggerMiddleware } from "./logger.widdleware.js"
+import { loggerMiddleware } from "./middleware/logger.widdleware.js"
 import { apiRouter } from "./routes.js"
 
 const ENVIRONMENT = process.env.NODE_ENV || "development"

@@ -1,6 +1,6 @@
 import type { Feature, Point } from "geojson"
 
-type FireBase = {
+export type FireBase = {
     geo: Feature<Point>
     name: string
     createdAt: string
@@ -13,7 +13,7 @@ export type ParamFromObject<T> = {
     converter: (val: unknown) => T
 }
 
-type ParamsToObject<T extends readonly ParamFromObject<any>[]> = {
+export type ParamsToObject<T extends readonly ParamFromObject<any>[]> = {
     [K in T[number] as K["paramName"]]: ReturnType<K["converter"]>
 }
 

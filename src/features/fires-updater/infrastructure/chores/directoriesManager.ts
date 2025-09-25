@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
 import os from "os"
-import { PROJECT_ROOT_PATH } from "~/utils/constants.js"
+import { PROJECT_ROOT_PATH } from "../../../../utils/constants.js"
 
 const TMP_DIR = path.join(os.tmpdir(), "tiff-fires-updater")
 
