@@ -1,10 +1,10 @@
-import { Router } from "express"
+import { Router } from 'express';
 
-import { healthCheckHandler } from "./health-check.controller.js"
-import { asyncHandler } from "~/utils/async-handler.js"
+import { healthCheckHandler } from './health-check.controller.js';
+import { asyncHandler } from '~/utils/async-handler.js';
 
-const router = Router()
+const router = Router();
 
-router.get("/", asyncHandler(healthCheckHandler))
+router.get('/', asyncHandler(healthCheckHandler));
 
-export { router as healthCheckRoutes }
+export { router as healthCheckRoutes };

@@ -1,7 +1,7 @@
 export enum REGIONS {
-    KS = "krasnoyarsk",
-    NK = "norilsk",
-    HB = "habarovsk",
+  KS = 'krasnoyarsk',
+  NK = 'norilsk',
+  HB = 'habarovsk',
 }
 
-export type Region = keyof typeof REGIONS
+export type Region = keyof typeof REGIONS;

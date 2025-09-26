@@ -1,1 +1,1 @@
-export const getFires = async () => {}
+export const getFires = async () => {};

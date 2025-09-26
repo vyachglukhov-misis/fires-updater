@@ -1,16 +1,28 @@
-import type { NextFunction, Request, Response } from "express"
-import { validateBody } from "~/middleware/validate.middleware.js"
-import { configSchema } from "./validation-schemas/start-service.schema.js"
-import { generateMainTiff } from "../application/update-fires.service.js"
+import type { Request, Response } from 'express';
+import { validateBody } from '~/middleware/validate.middleware.js';
+import { configSchema } from './validation-schemas/start-service.schema.js';
+import {
+  startGeneratingMainTiff,
+  stopGeneratingMainTiff,
+} from '../application/update-fires.service.js';
 
-export const startUpdatingFires = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { interval, region } = await validateBody(configSchema, req, res)
+export const startUpdatingFires = async (req: Request, res: Response) => {
+  const { interval, region } = await validateBody(configSchema, req, res);
 
-        const startFiresUpdatingResult = await generateMainTiff(region)
-    } catch (e) {
-        next(e)
-    }
-}
+  const startGeneratingMainTiffResult = startGeneratingMainTiff(
+    interval,
+    region,
+  );
 
-export const stopUpdatingFires = (req: Request, res: Response) => {}
+  const responseCode = startGeneratingMainTiffResult.ok ? 200 : 409;
+
+  res.status(responseCode).json(startGeneratingMainTiffResult);
+};
+
+export const stopUpdatingFires = async (req: Request, res: Response) => {
+  const stopGeneratingMainTiffResult = stopGeneratingMainTiff();
+
+  const responseCode = stopGeneratingMainTiffResult.ok ? 200 : 409;
+
+  res.status(responseCode).json(stopGeneratingMainTiffResult);
+};

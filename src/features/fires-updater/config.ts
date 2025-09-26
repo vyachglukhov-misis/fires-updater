@@ -1,16 +1,16 @@
 export const config = {
-    dividingSectors: 32, // на сколько секторов делить регион
-    maxChildProcesses: 12, // макс. число дочерних процессов
-    pixelSize: 90, // размер пикселя в метрах
-    calcCoeffFunction(dist: number): number {
-        const D = this.reliableDistance
-        if (dist >= D) return 0
-        const t = 1 - dist / D
-        return t * t * t
-    },
-    reliableDistance: 10000, // Радиус влияния D (метры), за пределами которого вклад точки считается нулевым.
-    normalization: {
-        gamma: 0.6, // меньше 1 → поднимаем малые значения
-    },
-    useMockFiresData: true,
-}
+  dividingSectors: 64, // на сколько секторов делить регион (КРАСНОЯРСК ОТ 64, ХАБАРОВСК ОТ 32)
+  maxChildProcesses: 12, // макс. число дочерних процессов
+  pixelSize: 90, // размер пикселя в метрах
+  calcCoeffFunction(dist: number): number {
+    const D = this.reliableDistance;
+    if (dist >= D) return 0;
+    const t = 1 - dist / D;
+    return t * t * t;
+  },
+  reliableDistance: 10000, // Радиус влияния D (метры), за пределами которого вклад точки считается нулевым.
+  normalization: {
+    gamma: 0.6, // меньше 1 → поднимаем малые значения
+  },
+  useMockFiresData: true,
+};

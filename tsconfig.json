@@ -1,28 +1,28 @@
 {
-    // Visit https://aka.ms/tsconfig to read more about this file
-    "compilerOptions": {
-        "allowJs": true,
-        "baseUrl": ".",
-        "esModuleInterop": true,
-        "isolatedModules": true,
-        "lib": ["ESNext"],
-        "module": "nodenext",
-        "moduleDetection": "force",
-        "noImplicitOverride": true,
-        "noUncheckedIndexedAccess": true,
-        // File Layout
-        "outDir": "dist",
-        "paths": {
-            "~/*": ["./src/*"],
-            "@features/*": ["./src/features/*"]
-        },
-        "resolveJsonModule": true,
-        "skipLibCheck": true,
-        "sourceMap": true,
-        "strict": true,
-        "target": "ES2023",
-        "verbatimModuleSyntax": true
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "lib": ["ESNext"],
+    "module": "nodenext",
+    "moduleDetection": "force",
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    // File Layout
+    "outDir": "dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@features/*": ["./src/features/*"]
     },
-    "exclude": ["node_modules", "dist"],
-    "include": ["src/**/*"]
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "ES2023",
+    "verbatimModuleSyntax": true
+  },
+  "exclude": ["node_modules", "dist"],
+  "include": ["src/**/*"]
 }

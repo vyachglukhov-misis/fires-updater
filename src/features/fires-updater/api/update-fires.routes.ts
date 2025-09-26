@@ -1,9 +1,13 @@
-import { Router } from "express"
-import { startUpdatingFires, stopUpdatingFires } from "./update-fires.controller.js"
+import { Router } from 'express';
+import {
+  startUpdatingFires,
+  stopUpdatingFires,
+} from './update-fires.controller.js';
+import { asyncHandler } from '~/utils/async-handler.js';
 
-const router = Router()
+const router = Router();
 
-router.post("/start", startUpdatingFires)
-router.post("/stop", stopUpdatingFires)
+router.post('/start', asyncHandler(startUpdatingFires));
+router.post('/stop', asyncHandler(stopUpdatingFires));
 
-export { router as firesUpdaterRoutes }
+export { router as firesUpdaterRoutes };
