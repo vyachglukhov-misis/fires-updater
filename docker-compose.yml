@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  fires-tiff-updater:
+    image: fires-tiff-updater:1.0.0
+    container_name: fires-tiff-updater
+    environment:
+      NODE_ENV: production
+      NODE_NO_WARNINGS: 1
+      NODE_OPTIONS: --max-old-space-size=8192
+    ports:
+      - "2348:2348"
+    volumes:
+      - ./logs:/app/logs
+      - ./out:/app/out
+      - ./tiles:/app/tiles
+      - ./updating_logs:/app/updating_logs
+      - ./static-data:/app/static-data
+    restart: unless-stopped

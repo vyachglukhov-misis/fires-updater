@@ -8,7 +8,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PATH_TO_WORKER = path.join(__dirname, 'writeDataToTiff.worker.ts');
+const ENVIRONMENT = process.env.NODE_ENV
+
+const PATH_TO_WORKER = path.join(__dirname, `writeDataToTiff.worker.${ENVIRONMENT === 'production' ? 'js' : 'ts'}`);
 
 export function getWriteDataToTiffPromises(
   sectorsData: SectorData[],

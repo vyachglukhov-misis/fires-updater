@@ -2,13 +2,16 @@ import path from 'path';
 import type { ParamFromObject } from '../../domain/types/fires.types.js';
 import { REGIONS } from '../../domain/enums/regions.enum.js';
 import { fileURLToPath } from 'url';
+import { PROJECT_ROOT_PATH } from '~/utils/constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const KRASNOYARSK_PATH = path.join(__dirname, 'krasnoyarsk');
-const NORILSK_PATH = path.join(__dirname, 'norilsk');
-const HABAROVSK_PATH = path.join(__dirname, 'habarovsk');
+const STATIC_DATA_DIR = path.join(PROJECT_ROOT_PATH, 'static-data')
+
+const KRASNOYARSK_PATH = path.join(STATIC_DATA_DIR, 'krasnoyarsk');
+const NORILSK_PATH = path.join(STATIC_DATA_DIR, 'norilsk');
+const HABAROVSK_PATH = path.join(STATIC_DATA_DIR, 'habarovsk');
 
 export const pathsToRegion = {
   [REGIONS.KS]: {

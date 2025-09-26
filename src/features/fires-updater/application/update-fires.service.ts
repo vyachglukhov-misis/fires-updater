@@ -141,7 +141,7 @@ export const generateMainTiff = async (region: REGIONS) => {
       },
     );
     logger.info(
-      `Вычеслены максимальные коэффициенты: ${maxCoefficientsMessage.join(', ')}`,
+      `Вычислены максимальные коэффициенты: ${maxCoefficientsMessage.join(', ')}`,
     );
 
     const writingSectorDataPromises = getWriteDataToTiffPromises(
