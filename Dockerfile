@@ -5,13 +5,6 @@ FROM node:23-bullseye AS builder
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    gdal-bin \
-    libgdal-dev \
-    build-essential \
-    python3 \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY package*.json ./
 
 RUN npm config set registry https://registry.npmmirror.com
@@ -26,9 +19,16 @@ FROM node:23-bullseye-slim
 
 WORKDIR /app
 
+# Установка GDAL в финальный образ
+RUN apt-get update && apt-get install -y \
+    gdal-bin \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
 COPY --from=builder /app/dist ./dist
 
-CMD ["node", "dist/index.js"]
+CMD ["npm", "run", "start"]

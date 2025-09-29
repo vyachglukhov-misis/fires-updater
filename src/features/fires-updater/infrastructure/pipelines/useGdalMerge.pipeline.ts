@@ -8,16 +8,17 @@ const getCmd = (inputFilesListDist: string, OUTPUT_FILE: string) =>
   `gdal_merge.py -ot UInt16 -of GTiff -o "${OUTPUT_FILE}" --optfile "${inputFilesListDist}" -co COMPRESS=DEFLATE`;
 
 export const useGdalMerge = async () => {
-  const now = String(Date.now());
+  const now = new Date()
+  const formattedNow = now.getFullYear().toString() +
+  String(now.getMonth() + 1).padStart(2, "0") +
+  String(now.getDate()).padStart(2, "0"); // YYYYMMDD
 
   const { OPT_OUTPUT_DIR, TILES_OUTPUT_DIR, MAIN_TIFF_OUTPUT_DIR } =
     workingDirectories;
 
-  const OPT_OUTPUT_FILENAME = OPT_OUTPUT_DIR + `/${now}.txt`;
-  const MAIN_TIFF_OUTPUT_FILENAME = MAIN_TIFF_OUTPUT_DIR + `/${now}.tif`;
+  const OPT_OUTPUT_FILENAME = OPT_OUTPUT_DIR + `/${String(now.getTime())}.txt`;
+  const MAIN_TIFF_OUTPUT_FILENAME = MAIN_TIFF_OUTPUT_DIR + `/${formattedNow}.tif`;
 
-  try {
-  } catch (e) {}
   return new Promise((res, rej) => {
     const tileFiles = fs
       .readdirSync(TILES_OUTPUT_DIR)
