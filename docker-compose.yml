@@ -8,6 +8,9 @@ services:
       NODE_ENV: production
       NODE_NO_WARNINGS: 1
       NODE_OPTIONS: --max-old-space-size=8192
+      IMAGE_MOSAIC_NAME: fires_updater_out
+      GEOSERVER_URL: http://geoserver:8080/geoserver
+      IMAGE_MOSAIC_PATH: file:///opt/geoserver_data/data/fires_updater_out
     ports:
       - "2348:2348"
     volumes:
@@ -17,3 +20,9 @@ services:
       - ./updating_logs:/app/updating_logs
       - ./static-data:/app/static-data
     restart: unless-stopped
+    networks: 
+      - geoserver_network
+
+networks:
+  geoserver_network:
+    external: true

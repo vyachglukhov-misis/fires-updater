@@ -21,6 +21,7 @@ WORKDIR /app
 
 # Установка GDAL в финальный образ
 RUN apt-get update && apt-get install -y \
+    curl \
     gdal-bin \
     python3 \
     && rm -rf /var/lib/apt/lists/*

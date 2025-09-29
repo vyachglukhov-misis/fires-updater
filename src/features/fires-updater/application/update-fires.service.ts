@@ -37,8 +37,9 @@ if (!fs.existsSync(UPDATING_TASKS_LOGS_DIR)) {
 }
 
 export const startGeneratingMainTiff = (interval: number, region: REGIONS) => {
+  
   if (isRunning) {
-    return { ok: false, error: 'Генерация тифов по пожарам уже запущена' };
+    return { ok: true, message: 'Генерация тифов по пожарам уже запущена' };
   }
 
   isRunning = true;
@@ -159,6 +160,8 @@ export const generateMainTiff = async (region: REGIONS) => {
       )
       .catch(err => logger.error('Ошибка при gdal_merge.py:', err));
 
+    await toggleGeoserverImageMosaic()
+
     logger.info('Все дочерние процессы завершены.');
     logger.info(`Время выполнения: ${formatDuration(Date.now() - now)}`);
   } catch (e) {
@@ -233,31 +236,36 @@ const toggleGeoserverImageMosaic = async () => {
   const imagemosaicName = process.env.IMAGE_MOSAIC_NAME;
   const geoserverUrl = process.env.GEOSERVER_URL;
   const geoserverPathToImageMosaic = process.env.IMAGE_MOSAIC_PATH;
+  const auth = Buffer.from(`admin:geoserver`).toString('base64')
+
+  logger.info('Инициализация запроса к Geoserver')
+
 
   if (!geoserverUrl || !imagemosaicName || !geoserverPathToImageMosaic) {
-    return;
+    throw new Error('IMAGE_MOSAIC_NAME, GEOSERVER_URL, IMAGE_MOSAIC_PATH must be provided')
   }
   const url = getUrl(geoserverUrl, imagemosaicName);
+
+  logger.info(url)
 
   try {
     const result = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'text/plain',
-        Authorization: `Basic admin:geoserver`,
-        Accept: 'application/json',
+        Authorization: `Basic ${auth}`,
+        Accept: 'text/plain',
       },
       body: geoserverPathToImageMosaic,
     });
 
-    const data = await result.json();
+    const data = await result.text();
 
-    logger.info(`GEOSERVER Response status: ${result.status}`);
-    logger.info(`GEOSERVER Response body: ${JSON.stringify(data)}`);
+    logger.info(`Статус ответа от Geoserver: ${result.status}`);
 
     if (!result.ok) {
       throw new Error(
-        `Attach to GEOSERVER failed with status ${result.status}`,
+        `Обращение к Geoserver обернулось ошибкой: ${result.status}`,
       );
     }
     return data;
