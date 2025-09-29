@@ -24,5 +24,6 @@ services:
       - geoserver_network
 
 networks:
+  # перед запуском docker compose нужно создать сеть:  docker network create geoserver_network
   geoserver_network:
     external: true
