@@ -225,3 +225,44 @@ const getDividedRegionGeoJSON = (region: REGIONS) => {
 
   return divideGeojsonOnNSectors(geojson, N);
 };
+
+const toggleGeoserverImageMosaic = async () => {
+  const getUrl = (geoserverUrl: string, imageMosaicName: string) => {
+    return `${geoserverUrl}/rest/workspaces/citorus/coveragestores/${imageMosaicName}/external.imagemosaic`;
+  };
+  const imagemosaicName = process.env.IMAGE_MOSAIC_NAME;
+  const geoserverUrl = process.env.GEOSERVER_URL;
+  const geoserverPathToImageMosaic = process.env.IMAGE_MOSAIC_PATH;
+
+  if (!geoserverUrl || !imagemosaicName || !geoserverPathToImageMosaic) {
+    return;
+  }
+  const url = getUrl(geoserverUrl, imagemosaicName);
+
+  try {
+    const result = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+        Authorization: `Basic admin:geoserver`,
+        Accept: 'application/json',
+      },
+      body: geoserverPathToImageMosaic,
+    });
+
+    const data = await result.json();
+
+    logger.info(`GEOSERVER Response status: ${result.status}`);
+    logger.info(`GEOSERVER Response body: ${JSON.stringify(data)}`);
+
+    if (!result.ok) {
+      throw new Error(
+        `Attach to GEOSERVER failed with status ${result.status}`,
+      );
+    }
+    return data;
+  } catch (e) {
+    logger.error(e);
+    throw e;
+  }
+};
