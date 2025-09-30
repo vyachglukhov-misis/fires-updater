@@ -7,7 +7,7 @@ import { PROJECT_ROOT_PATH } from '~/utils/constants.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const STATIC_DATA_DIR = path.join(PROJECT_ROOT_PATH, 'static-data')
+const STATIC_DATA_DIR = path.join(PROJECT_ROOT_PATH, 'static-data');
 
 const KRASNOYARSK_PATH = path.join(STATIC_DATA_DIR, 'krasnoyarsk');
 const NORILSK_PATH = path.join(STATIC_DATA_DIR, 'norilsk');
@@ -17,10 +17,6 @@ export const pathsToRegion = {
   [REGIONS.KS]: {
     geojson: path.join(KRASNOYARSK_PATH, 'krasnoyarsk_krai.geojson'),
     fires: path.join(KRASNOYARSK_PATH, 'fires_krasnoyarsk.json'),
-  },
-  [REGIONS.NK]: {
-    geojson: path.join(NORILSK_PATH, 'norilsk.geojson'),
-    fires: path.join(NORILSK_PATH, 'fires_norilsk.json'),
   },
   [REGIONS.HB]: {
     geojson: path.join(HABAROVSK_PATH, 'habarovsk-region.json'),
@@ -43,5 +39,4 @@ export const paramsToRegion: Record<REGIONS, WeightedParam<any>[]> = {
     // },
   ],
   [REGIONS.KS]: [],
-  [REGIONS.NK]: [],
 };

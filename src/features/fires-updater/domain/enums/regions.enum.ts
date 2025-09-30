@@ -1,6 +1,5 @@
 export enum REGIONS {
   KS = 'krasnoyarsk',
-  NK = 'norilsk',
   HB = 'habarovsk',
 }
 

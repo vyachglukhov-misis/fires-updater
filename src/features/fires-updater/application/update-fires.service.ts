@@ -1,5 +1,5 @@
 import { config } from '@features/fires-updater/config.js';
-import type { REGIONS } from '../domain/enums/regions.enum.js';
+import { REGIONS } from '../domain/enums/regions.enum.js';
 import {
   paramsToRegion,
   pathsToRegion,
@@ -27,6 +27,9 @@ import { formatDuration } from '../utils/formatDuration.js';
 import path from 'path';
 import { workingDirectories } from '../infrastructure/chores/directoriesManager.js';
 import winston from 'winston';
+import { getDb } from '~/infrastructure/db.js';
+import { createTask, updateTask } from './task-manager.service.js';
+import { getConfig, updateConfig, type TaskStatus } from './userProjectData.js';
 const { UPDATING_TASKS_LOGS_DIR } = workingDirectories;
 
 let cronTimeout: NodeJS.Timeout | null = null;
@@ -37,33 +40,46 @@ if (!fs.existsSync(UPDATING_TASKS_LOGS_DIR)) {
 }
 
 export const startGeneratingMainTiff = (interval: number, region: REGIONS) => {
-  
   if (isRunning) {
     return { ok: true, message: 'Генерация тифов по пожарам уже запущена' };
   }
 
   isRunning = true;
 
-  const runTask = async () => {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const logFilePath = path.join(
-      UPDATING_TASKS_LOGS_DIR,
-      `fires-${timestamp}.log`,
-    );
+  const config = updateConfig({ isRunning });
 
+  const runTask = async () => {
+    logger.info(`Инициализация создания задачи`);
+    const { taskId, doc } = await createTask(region);
+    if (!taskId || !doc) {
+      throw new Error('Не удалось создать задачу');
+    }
+    // const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const logFilePath = path.join(UPDATING_TASKS_LOGS_DIR, `${taskId}.log`);
     // создаем временный транспорт для текущей итерации
     const fileTransport = new winston.transports.File({
       filename: logFilePath,
     });
-
     logger.add(fileTransport);
+    logger.info(`Задача успешно создана. Идентификатор задачи: ${taskId}`);
 
     try {
       logger.info(`Начало генерации TIFF для региона ${region}`);
       await generateMainTiff(region); // передаем глобальный логгер
       logger.info('Генерация TIFF завершена');
+
+      const status: TaskStatus = {
+        command: 'progress',
+        value: 100,
+        logLink: logFilePath,
+        config,
+      };
+
+      logger.info(`Обновление статуса задачи: ${taskId}`);
+      await updateTask(taskId, status);
     } catch (err) {
       logger.error(`Ошибка при генерации TIFF: ${err}`);
+      throw err;
     } finally {
       // удаляем временный транспорт после завершения итерации
       logger.remove(fileTransport);
@@ -80,7 +96,11 @@ export const startGeneratingMainTiff = (interval: number, region: REGIONS) => {
 };
 
 export const stopGeneratingMainTiff = () => {
-  if (!isRunning) return { ok: false, error: 'Генерация тифов не запущена' };
+  const successStop = { ok: true, message: 'Генерация тифов остановлена' };
+  if (!isRunning) {
+    logger.info(successStop.message);
+    return successStop;
+  }
 
   isRunning = false;
   if (cronTimeout) {
@@ -88,7 +108,8 @@ export const stopGeneratingMainTiff = () => {
     cronTimeout = null;
   }
 
-  return { ok: true, message: 'Генерация тифов остановлена' };
+  logger.info(successStop.message);
+  return successStop;
 };
 
 export const generateMainTiff = async (region: REGIONS) => {
@@ -160,7 +181,7 @@ export const generateMainTiff = async (region: REGIONS) => {
       )
       .catch(err => logger.error('Ошибка при gdal_merge.py:', err));
 
-    await toggleGeoserverImageMosaic()
+    await treatToGeoserverImageMosaic();
 
     logger.info('Все дочерние процессы завершены.');
     logger.info(`Время выполнения: ${formatDuration(Date.now() - now)}`);
@@ -173,13 +194,40 @@ const getFires = async (region: REGIONS, params: WeightedParam<any>[]) => {
   let firesObjects;
   if (config.useMockFiresData) {
     const { fires: firesRawPath } = pathsToRegion[region];
+
     firesObjects = JSON.parse(fs.readFileSync(firesRawPath, 'utf-8'));
   } else {
-    // логика под запрос на коллекцию
-    const { fires: firesRawPath } = pathsToRegion[region];
-    firesObjects = JSON.parse(fs.readFileSync(firesRawPath, 'utf-8'));
+    const getFiresObjectsResult = await getFiresObjects(region);
+
+    if (!getFiresObjectsResult.ok || !getFiresObjectsResult.message) {
+      throw new Error('Не удалось получить объекты пожаров');
+    }
+
+    firesObjects = getFiresObjectsResult.message;
   }
   return getFiresObjectsWithOtherParams(firesObjects, params);
+};
+
+export const getFiresObjects = async (region: REGIONS) => {
+  const COLLECTIONS_BY_REGION = {
+    [REGIONS.KS]: 'a4fd2d934453e26ad8f3c97343a6e30ee',
+    [REGIONS.HB]: 'b5bf4570e8414c1099fccb9857186e782',
+  };
+  try {
+    const db = await getDb();
+
+    const collection = COLLECTIONS_BY_REGION[region];
+
+    const firesObjects = await db.collection<any>(collection).find().toArray();
+
+    if (!firesObjects.length) {
+      return { ok: false, error: 'Не найдены объекты пожаров', code: 404 };
+    }
+    return { ok: true, message: firesObjects };
+  } catch (e) {
+    logger.error(e);
+    return { ok: false, error: 'Ошибка при получении пожаров', code: 404 };
+  }
 };
 
 const getFiresObjectsWithOtherParams = <
@@ -229,24 +277,25 @@ const getDividedRegionGeoJSON = (region: REGIONS) => {
   return divideGeojsonOnNSectors(geojson, N);
 };
 
-const toggleGeoserverImageMosaic = async () => {
+const treatToGeoserverImageMosaic = async () => {
   const getUrl = (geoserverUrl: string, imageMosaicName: string) => {
     return `${geoserverUrl}/rest/workspaces/citorus/coveragestores/${imageMosaicName}/external.imagemosaic`;
   };
   const imagemosaicName = process.env.IMAGE_MOSAIC_NAME;
   const geoserverUrl = process.env.GEOSERVER_URL;
   const geoserverPathToImageMosaic = process.env.IMAGE_MOSAIC_PATH;
-  const auth = Buffer.from(`admin:geoserver`).toString('base64')
+  const auth = Buffer.from(`admin:geoserver`).toString('base64');
 
-  logger.info('Инициализация запроса к Geoserver')
-
+  logger.info('Инициализация запроса к Geoserver');
 
   if (!geoserverUrl || !imagemosaicName || !geoserverPathToImageMosaic) {
-    throw new Error('IMAGE_MOSAIC_NAME, GEOSERVER_URL, IMAGE_MOSAIC_PATH must be provided')
+    throw new Error(
+      'IMAGE_MOSAIC_NAME, GEOSERVER_URL, IMAGE_MOSAIC_PATH must be provided',
+    );
   }
   const url = getUrl(geoserverUrl, imagemosaicName);
 
-  logger.info(url)
+  logger.info(url);
 
   try {
     const result = await fetch(url, {

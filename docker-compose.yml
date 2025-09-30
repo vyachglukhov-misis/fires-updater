@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 services:
   fires-tiff-updater:
@@ -9,10 +9,12 @@ services:
       NODE_NO_WARNINGS: 1
       NODE_OPTIONS: --max-old-space-size=8192
       IMAGE_MOSAIC_NAME: fires_updater_out
-      GEOSERVER_URL: http://geoserver:8080/geoserver
+      GEOSERVER_URL: http://localhost:8080/geoserver
       IMAGE_MOSAIC_PATH: file:///opt/geoserver_data/data/fires_updater_out
+      MONGO_URI: mongodb://mongo:mongo@192.168.68.222/citorus3?authSource=admin
+      BASE_NJS_URL: http://localhost:9000
     ports:
-      - "2348:2348"
+      - '2348:2348'
     volumes:
       - ./logs:/app/logs
       - ./out:/app/out
@@ -20,10 +22,4 @@ services:
       - ./updating_logs:/app/updating_logs
       - ./static-data:/app/static-data
     restart: unless-stopped
-    networks: 
-      - geoserver_network
-
-networks:
-  # перед запуском docker compose нужно создать сеть:  docker network create geoserver_network
-  geoserver_network:
-    external: true
+    network_mode: 'host'

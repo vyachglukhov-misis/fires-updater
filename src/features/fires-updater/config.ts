@@ -12,5 +12,5 @@ export const config = {
   normalization: {
     gamma: 0.6, // меньше 1 → поднимаем малые значения
   },
-  useMockFiresData: true,
+  useMockFiresData: false,
 };
