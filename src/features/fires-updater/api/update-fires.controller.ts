@@ -44,7 +44,6 @@ export const getFiresObjectsLength = async (req: Request, res: Response) => {
   const { region } = await validateBody(configSchema, req, res);
   const firesObjects = await getFiresObjects(region);
 
-  console.log(firesObjects.message?.length);
   res.status(200).json({ length: firesObjects.message?.length });
 };
 

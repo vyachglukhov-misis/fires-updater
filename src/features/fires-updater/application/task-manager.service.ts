@@ -19,7 +19,6 @@ const processTypeByRegion = {
 };
 
 const BASE_NJS_URL = process.env.BASE_NJS_URL || 'http://localhost:9000';
-console.log(BASE_NJS_URL);
 
 const TASK_MANAGER_ROUTES = {
   createTask: 'task-manager/start-task',
@@ -35,8 +34,6 @@ export const createTask = async (region: REGIONS) => {
     path.join(`${project}`, TASK_MANAGER_ROUTES.createTask);
 
   const processType = processTypeByRegion[region];
-
-  console.log(TASK_MANAGER_CREATE_URL);
 
   const nameConfiguration = `Генерация слоя горимости ${region === REGIONS.HB ? 'Хабаровского' : 'Красноярского'} края`;
 
@@ -68,15 +65,6 @@ export const createTask = async (region: REGIONS) => {
 export const updateTask = async (taskId: string, status: TaskStatus) => {
   try {
     const { userId, project } = getUserProjectData();
-
-    console.log(
-      JSON.stringify({
-        taskId,
-        userId,
-        project,
-        status,
-      }),
-    );
 
     const TASK_MANAGER_UPDATE_URL =
       BASE_NJS_URL +

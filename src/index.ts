@@ -2,8 +2,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log(process.env.MONGO_URI);
-
 import { buildApp } from './app.js';
 const PORT = Number(process.env.PORT) || 2348;
 
